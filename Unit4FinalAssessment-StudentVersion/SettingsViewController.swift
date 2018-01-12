@@ -10,6 +10,10 @@ import UIKit
 
 enum PropertyName: String {
     case widthMultiplier = "Width Multiplier"
+    case heightMultiplier = "Height Multiplier"
+    case horizontalOffset = "Horizontal Offset"
+    case verticalOffset = "Vertical Offset"
+    case rotations = "Rotations"
     //TO DO: Add other PropertyName Cases
 }
 
@@ -21,12 +25,16 @@ struct AnimationProperty {
     let startingStepperVal: Double
 }
 
+
+
 class SettingsViewController: UIViewController {
 
     //TO DO: Add more properties
     var properties: [[AnimationProperty]] =
     [
-        [AnimationProperty(name: .widthMultiplier, stepperMin: 0, stepperMax: 1.0, stepperIncrement: 0.1, startingStepperVal: 0.0)]
+        [AnimationProperty(name: .widthMultiplier, stepperMin: 0.1, stepperMax: 2.0, stepperIncrement: 0.1, startingStepperVal: 0.0), AnimationProperty(name: .heightMultiplier, stepperMin: 0.1, stepperMax: 2.0, stepperIncrement: 0.1, startingStepperVal: 0.0)],
+        [AnimationProperty(name: .horizontalOffset, stepperMin: -100, stepperMax: 100, stepperIncrement: 20, startingStepperVal: 0.0), AnimationProperty(name: .verticalOffset, stepperMin: -100, stepperMax: 100, stepperIncrement: 20, startingStepperVal: 0.0)],
+        [AnimationProperty(name: .rotations, stepperMin: 0, stepperMax: 5.0, stepperIncrement: 1, startingStepperVal: 0.0)]
     ]
 
     
@@ -35,6 +43,22 @@ class SettingsViewController: UIViewController {
         view.addSubview(tableView)
         navigationItem.title = "Settings"
         layoutTableView()
+        let plusButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(plusButtonTapped(_:)))
+        self.navigationItem.rightBarButtonItem = plusButton
+    }
+    
+    @objc func plusButtonTapped(_ sender:UIBarButtonItem!)
+    {
+        showAlert()
+    }
+    
+    func showAlert() {
+    let alertController = UIAlertController(title: "Animation", message: "Please input your animation", preferredStyle: UIAlertControllerStyle.alert)
+        let action = UIAlertAction(title: "Name Input", style: .default) { (alertAction) in
+            let textField = alertController.textFields![0] as UITextField
+            textField.placeholder = "enter title"
+        }
+        alertController.addAction(action)
     }
     
     func layoutTableView() {
@@ -49,7 +73,7 @@ class SettingsViewController: UIViewController {
         let tv = UITableView()
         tv.dataSource = self
         tv.delegate = self
-        //TO DO: Register your subclass
+        tv.register(SettingsTableViewCell.self, forCellReuseIdentifier: "SettingsCell")
         return tv
     }()
 }
@@ -60,11 +84,18 @@ extension SettingsViewController: UITableViewDataSource {
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         //TO DO: Implement your Custom Cell that has a stepper
+        let cell = tableView.dequeueReusableCell(withIdentifier: "SettingsCell", for: indexPath) as! SettingsTableViewCell
         let property = properties[indexPath.section][indexPath.row]
-        let cell = UITableViewCell()
-        cell.textLabel?.text = property.name.rawValue
+        cell.property = property
+        if let currentVal = cell.currentValuesForPropertiesDict[property.name.rawValue] {
+            cell.propertyLabel.text = property.name.rawValue + " " + currentVal.description
+            
+            
+        }
         return cell
     }
+    
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return properties[section].count
     }
@@ -75,7 +106,9 @@ extension SettingsViewController: UITableViewDelegate {
         switch section {
         case 0:
             return "Size Settings"
-        //TO DO: Handle other sections
+        case 1 :
+            return "Position Settings"
+        
         default:
             return "Other Settings"
         }

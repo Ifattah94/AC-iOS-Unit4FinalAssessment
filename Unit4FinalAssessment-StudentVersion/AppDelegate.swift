@@ -23,6 +23,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let svc = SettingsViewController()
         let navCon = UINavigationController(rootViewController: svc)
         svc.tabBarItem = UITabBarItem(title: "Settings", image: nil, tag: 1)
+        
         tbc.viewControllers = [avc, navCon]
         window?.rootViewController = tbc
         window?.makeKeyAndVisible()
