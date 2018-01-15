@@ -11,40 +11,6 @@ import UIKit
 class SettingsTableViewCell: UITableViewCell {
 
     
-    var property: AnimationProperty? {
-        didSet {
-            setCurrentValues(with: property!)
-        }
-    }
-    
-    
-    var currentValuesForPropertiesDict: [String: Double] = [:] {
-        didSet {
-            
-        }
-    }
-    
-    
-    
-    
-    
-    
-    public func setCurrentValues(with property: AnimationProperty) {
-        switch property.name {
-        case .widthMultiplier :
-            currentValuesForPropertiesDict.updateValue(stepper.value, forKey: property.name.rawValue)
-        case.heightMultiplier :
-            currentValuesForPropertiesDict.updateValue(stepper.value, forKey: property.name.rawValue)
-        case.horizontalOffset :
-            currentValuesForPropertiesDict.updateValue(stepper.value, forKey: property.name.rawValue)
-        case.verticalOffset :
-            currentValuesForPropertiesDict.updateValue(stepper.value, forKey: property.name.rawValue)
-        case .rotations :
-            currentValuesForPropertiesDict.updateValue(stepper.value, forKey: property.name.rawValue)
-        }
-    }
-    
-    
     lazy var propertyLabel: UILabel = {
         let label = UILabel()
         //label.text = "Test"
@@ -53,8 +19,16 @@ class SettingsTableViewCell: UITableViewCell {
         return label
     }()
     
+    lazy var valueLabel: UILabel = {
+        let label = UILabel()
+        return label
+    }()
+    
     lazy var stepper: UIStepper = {
         let stepper = UIStepper()
+        stepper.addTarget(self, action: #selector(step), for: .valueChanged)
+        var section = 0
+        var row = 0
         return stepper
     }()
 
@@ -72,27 +46,27 @@ class SettingsTableViewCell: UITableViewCell {
     private func commonInit() {
         backgroundColor = .white
         setupViews()
-        setupStepperValues()
+        
         
     }
     
     @objc func step() {
-        if let property = property {
-            setCurrentValues(with: property)
-            if let val = currentValuesForPropertiesDict[property.name.rawValue] {
-                propertyLabel.text = property.name.rawValue + " " + val.description
-            }
-        }
+        valueLabel.text = stepper.value.description
+
         
     }
     
     
     private func setupStepper() {
-        
+        addSubview(stepper)
+        stepper.translatesAutoresizingMaskIntoConstraints = false
+        stepper.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -4).isActive = true
+        stepper.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
     }
     private func setupViews() {
         setupPropertyLabel()
         setupStepper()
+        setupValueLabel()
     }
     
     private func setupPropertyLabel() {
@@ -103,23 +77,19 @@ class SettingsTableViewCell: UITableViewCell {
      
     }
     
-    private func setupStepperValues() {
-        if let property = property {
-            stepper.minimumValue = property.stepperMin
-            stepper.maximumValue = property.stepperMax
-            stepper.stepValue = property.stepperIncrement
-            stepper.addTarget(self, action: #selector(step), for: .valueChanged)
-    }
-        addSubview(stepper)
-        stepper.translatesAutoresizingMaskIntoConstraints = false
-        stepper.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -4).isActive = true
-        stepper.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
+    private func setupValueLabel() {
+        addSubview(valueLabel)
+        
+        valueLabel.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate([
+            valueLabel.leadingAnchor.constraint(equalTo: propertyLabel.trailingAnchor, constant: 8),
+            valueLabel.centerYAnchor.constraint(equalTo: centerYAnchor)
+            ])
+        
+        
         
     }
-    
-  
-    
-   
     
 
 }

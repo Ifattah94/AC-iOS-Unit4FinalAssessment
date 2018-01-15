@@ -16,6 +16,8 @@
 		811680C92009204F009FB732 /* AnimationsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 811680C82009204F009FB732 /* AnimationsView.swift */; };
 		811680CB20093B45009FB732 /* CustomAnimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 811680CA20093B45009FB732 /* CustomAnimation.swift */; };
 		811680CD20093EC2009FB732 /* CustomAnimationHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 811680CC20093EC2009FB732 /* CustomAnimationHelper.swift */; };
+		81D2D5CE200D22870040C85E /* DataPersistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81D2D5CD200D22870040C85E /* DataPersistence.swift */; };
+		81D2D5D0200D23E20040C85E /* Animation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81D2D5CF200D23E20040C85E /* Animation.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -30,6 +32,8 @@
 		811680C82009204F009FB732 /* AnimationsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimationsView.swift; sourceTree = "<group>"; };
 		811680CA20093B45009FB732 /* CustomAnimation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomAnimation.swift; sourceTree = "<group>"; };
 		811680CC20093EC2009FB732 /* CustomAnimationHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomAnimationHelper.swift; sourceTree = "<group>"; };
+		81D2D5CD200D22870040C85E /* DataPersistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataPersistence.swift; sourceTree = "<group>"; };
+		81D2D5CF200D23E20040C85E /* Animation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Animation.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -64,6 +68,8 @@
 			children = (
 				54AE10232007F203005FFA29 /* AppDelegate.swift */,
 				811680C6200911D2009FB732 /* SettingsTableViewCell.swift */,
+				81D2D5CD200D22870040C85E /* DataPersistence.swift */,
+				81D2D5CF200D23E20040C85E /* Animation.swift */,
 				54AE10352007F256005FFA29 /* AnimationViewController.swift */,
 				811680C82009204F009FB732 /* AnimationsView.swift */,
 				54AE10372007F270005FFA29 /* SettingsViewController.swift */,
@@ -154,6 +160,8 @@
 				811680C7200911D2009FB732 /* SettingsTableViewCell.swift in Sources */,
 				54AE10382007F270005FFA29 /* SettingsViewController.swift in Sources */,
 				811680CB20093B45009FB732 /* CustomAnimation.swift in Sources */,
+				81D2D5D0200D23E20040C85E /* Animation.swift in Sources */,
+				81D2D5CE200D22870040C85E /* DataPersistence.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

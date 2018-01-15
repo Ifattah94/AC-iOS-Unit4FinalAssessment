@@ -20,9 +20,27 @@ class AnimationViewController: UIViewController {
         
     }
     
-    var testInfo = ["Test1", "Test2", "Test3"]
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        self.animations = DataPersistenceHelper.manager.getFavoriteAnimations()
+        
+    }
     
+    var animations = [DataPersistenceHelper.UserAnimation]() {
+        didSet {
+            animationsView.animationsPickerView.reloadAllComponents()
+        }
+    }
+    func runAnimation() {
+        guard let loadedAnimation = selectedAnimation else { return }
+        
+        Animation.doAnimation(animation: loadedAnimation.animation, on: animationsView.snowmanImageView)
+        
+        
+    }
     
+    var selectedAnimation: DataPersistenceHelper.UserAnimation?
 }
 extension AnimationViewController:  UIPickerViewDataSource {
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
@@ -30,7 +48,7 @@ extension AnimationViewController:  UIPickerViewDataSource {
     }
     
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        return testInfo.count
+        return animations.count
         
     }
     
@@ -39,10 +57,14 @@ extension AnimationViewController:  UIPickerViewDataSource {
 
 extension AnimationViewController: UIPickerViewDelegate {
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        return testInfo[row]
+        return animations[row].name
     }
     
-    //TODO implement didSelectMethod 
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        selectedAnimation = animations[row]
+        runAnimation()
+        
+    }
     
 }
 

@@ -14,6 +14,10 @@ enum PropertyName: String {
     case horizontalOffset = "Horizontal Offset"
     case verticalOffset = "Vertical Offset"
     case rotations = "Rotations"
+    case duration = "Duration"
+    case numberOfFlips = "Number of Flips"
+    case opacity = "Opacity"
+     case curvature = "Curvature"
     //TO DO: Add other PropertyName Cases
 }
 
@@ -23,43 +27,93 @@ struct AnimationProperty {
     let stepperMax: Double
     let stepperIncrement: Double
     let startingStepperVal: Double
+    let id: Int
 }
 
 
 
 class SettingsViewController: UIViewController {
 
-    //TO DO: Add more properties
-    var properties: [[AnimationProperty]] =
-    [
-        [AnimationProperty(name: .widthMultiplier, stepperMin: 0.1, stepperMax: 2.0, stepperIncrement: 0.1, startingStepperVal: 0.0), AnimationProperty(name: .heightMultiplier, stepperMin: 0.1, stepperMax: 2.0, stepperIncrement: 0.1, startingStepperVal: 0.0)],
-        [AnimationProperty(name: .horizontalOffset, stepperMin: -100, stepperMax: 100, stepperIncrement: 20, startingStepperVal: 0.0), AnimationProperty(name: .verticalOffset, stepperMin: -100, stepperMax: 100, stepperIncrement: 20, startingStepperVal: 0.0)],
-        [AnimationProperty(name: .rotations, stepperMin: 0, stepperMax: 5.0, stepperIncrement: 1, startingStepperVal: 0.0)]
-    ]
+    var animationToSave = Animation(widthMultiplier: 1, heightMultiplier: 1, horizontalOffset: 0, verticalOffset: 0, duration: 1, flips: 0, opacity: 1, curvature: 0)
 
+    
+    var properties: [[AnimationProperty]] =
+        [
+            // Scale
+            [AnimationProperty(name: .widthMultiplier, stepperMin: 0, stepperMax: 2.0, stepperIncrement: 0.1, startingStepperVal: 1.0, id: 0),
+             AnimationProperty(name: .heightMultiplier, stepperMin: 0, stepperMax: 2.0, stepperIncrement: 0.1, startingStepperVal: 1.0, id: 1)
+            ],
+            
+            
+            [AnimationProperty(name: .horizontalOffset, stepperMin: -300, stepperMax: 300.0, stepperIncrement: 5, startingStepperVal: 0.0, id: 2),
+             AnimationProperty(name: .verticalOffset, stepperMin: -300, stepperMax: 300.0, stepperIncrement: 5, startingStepperVal: 0.0, id: 3)
+            ],
+            
+           
+            [AnimationProperty(name: .duration, stepperMin: 0.0, stepperMax: 10.0, stepperIncrement: 0.5, startingStepperVal: 1.0, id: 4),
+             AnimationProperty(name: .numberOfFlips, stepperMin: 0, stepperMax: 10.0, stepperIncrement: 1, startingStepperVal: 0.0, id: 5),
+             AnimationProperty(name: .opacity, stepperMin: 0, stepperMax: 1.0, stepperIncrement: 0.1, startingStepperVal: 1.0, id: 6),
+             AnimationProperty(name: .curvature, stepperMin: 0, stepperMax: 100.0, stepperIncrement: 10, startingStepperVal: 0.0, id: 7)
+            ]
+    ]
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
         view.addSubview(tableView)
         navigationItem.title = "Settings"
         layoutTableView()
-        let plusButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(plusButtonTapped(_:)))
+        let plusButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(plusButtonTapped))
         self.navigationItem.rightBarButtonItem = plusButton
     }
     
-    @objc func plusButtonTapped(_ sender:UIBarButtonItem!)
+    @objc func plusButtonTapped()
     {
-        showAlert()
+        let alert = UIAlertController(title: "New Setting", message: "Enter your setting.", preferredStyle: .alert)
+        
+        
+        alert.addTextField(configurationHandler: {
+            $0.placeholder = "New Setting."
+        })
+        
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        let submitAction = UIAlertAction(title: "Submit", style: .default) { [unowned self] _ in
+            guard let name = alert.textFields?[0].text else { return }
+            DataPersistenceHelper.manager.addAnimation(name: name, animation: self.animationToSave)
+        }
+        alert.addAction(submitAction)
+        
+        
+        present(alert, animated: true, completion: nil)
     }
     
-    func showAlert() {
-    let alertController = UIAlertController(title: "Animation", message: "Please input your animation", preferredStyle: UIAlertControllerStyle.alert)
-        let action = UIAlertAction(title: "Name Input", style: .default) { (alertAction) in
-            let textField = alertController.textFields![0] as UITextField
-            textField.placeholder = "enter title"
+    @objc func step(_ stepper: UIStepper) {
+        
+        switch stepper.tag {
+        case 0:
+            animationToSave.widthMultiplier = stepper.value
+        case 1:
+            animationToSave.heightMultiplier = stepper.value
+        case 2:
+            animationToSave.horizontalOffset = stepper.value
+        case 3:
+            animationToSave.verticalOffset = stepper.value
+        case 4:
+            animationToSave.duration = stepper.value
+        case 5:
+            animationToSave.flips = stepper.value
+        case 6:
+            animationToSave.opacity = stepper.value
+        case 7:
+            animationToSave.curvature = stepper.value
+        default:
+            break
         }
-        alertController.addAction(action)
+        
+        
     }
+    
+  
     
     func layoutTableView() {
         tableView.translatesAutoresizingMaskIntoConstraints = false
@@ -85,20 +139,32 @@ extension SettingsViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         //TO DO: Implement your Custom Cell that has a stepper
         let cell = tableView.dequeueReusableCell(withIdentifier: "SettingsCell", for: indexPath) as! SettingsTableViewCell
+        
+        
         let property = properties[indexPath.section][indexPath.row]
-        cell.property = property
-        if let currentVal = cell.currentValuesForPropertiesDict[property.name.rawValue] {
-            cell.propertyLabel.text = property.name.rawValue + " " + currentVal.description
-            
-            
-        }
+        
+        cell.propertyLabel.text = "\(property.name.rawValue): "
+        
+        cell.stepper.tag = property.id
+        
+        cell.stepper.value = property.startingStepperVal
+        cell.stepper.stepValue = property.stepperIncrement
+        cell.stepper.minimumValue = property.stepperMin
+        cell.stepper.maximumValue = property.stepperMax
+        
+        cell.stepper.addTarget(self, action: #selector(step), for: .valueChanged)
+        
+        cell.valueLabel.text = cell.stepper.value.description
         return cell
-    }
+        }
+    
     
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return properties[section].count
     }
+    
+
 }
 
 extension SettingsViewController: UITableViewDelegate {
